@@ -29,7 +29,7 @@ SoftwareSerial SerialAT(2, 3);  // RX, TX
 #define TINY_GSM_USE_GPRS true
 
 //Sim kart icin pin numarasi
-#define GSM_PIN "1840"
+#define GSM_PIN ""
 
 //GPRS Baglanti Ayarlari
 const char apn[]      = "internet";
@@ -40,9 +40,9 @@ const char gprsPass[] = "";
 const char* broker = "broker.mqttdashboard.com";
 
 //MQTT Brokerinda pub ve sub topicleri
-const char* topicLed       = "GsmClientTest/led";
-const char* topicInit      = "GsmClientTest/init";
-const char* topicLedStatus = "GsmClientTest/ledStatus";
+const char* topicLed       = "GsmCit/led";
+const char* topicInit      = "GsmCit/init";
+const char* topicLedStatus = "GsmCit/ledStatus";
 
 #ifdef DUMP_AT_COMMANDS
 #include <StreamDebugger.h>
@@ -105,14 +105,14 @@ void setup() {
 
   // Set GSM module baud rate
   TinyGsmAutoBaud(SerialAT, GSM_AUTOBAUD_MIN, GSM_AUTOBAUD_MAX);
-  // SerialAT.begin(9600);
+  SerialAT.begin(9600);
   delay(6000);
 
   // Restart takes quite some time
   // To skip it, call init() instead of restart()
   SerialMon.println("Modem baslatiliyor...");
-  modem.restart();
-  // modem.init();
+  //modem.restart();
+  modem.init();
 
   String modemInfo = modem.getModemInfo();
   SerialMon.print("Modem Bilgisi: ");
@@ -146,7 +146,7 @@ void setup() {
 
   //MQTT Broker Detaylari
   mqtt.setServer(broker, 1883);
-  mqtt.setCallback(mqttCallback);"
+  mqtt.setCallback(mqttCallback);
 }
 
 void loop() {
@@ -160,8 +160,7 @@ void loop() {
         delay(10000);
         return;
       }
-}
-
+  }
   if (!mqtt.connected()) {
     SerialMon.println("=== MQTT Baglantisi Kurulamadi ===");
     // Reconnect every 10 seconds
@@ -173,5 +172,6 @@ void loop() {
     delay(100);
     return;
   }
+  
   mqtt.loop();
 }
